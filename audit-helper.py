@@ -1,20 +1,42 @@
+﻿#!/usr/bin/python 
+# -*- coding: utf-8 -*-   
+import os  
+
+def file_name(file_dir):   
+    L=[]   
+    i = 1
+    for root, dirs, files in os.walk(file_dir):  
+        for file in files:  
+            if os.path.splitext(file)[1] == '.xls':
+                print(i,'.\t',file)
+                i += 1
+                L.append(os.path.join(root, file))  
+    return L
+
+#其中os.path.splitext()函数将路径拆分为文件名+扩展名        
+print('您当前目录下有如下excel文件：')
+files = file_name(os.getcwd())
+snum = input('\n请输入想处理文件的序号：')
+resoursepath = files[int(snum)-1]
+name = input('\n请给输出文件起个名字：')
+testpath = name + '.xls'
+print('\n程序将运行半分钟至1分钟，运行完后会自动关闭，输出文件将出现在当前目录下')
+
 YEAR = 1
 ACCNUM = 8
 ACCNAME = 9
 DEB = 10
 CRE = 11
 
-#��ȡexcelʹ��(֧��03)  
+#读取excel使用(支持03)  
 import xlrd 
-#д��excelʹ��(֧��03)  
+#写入excel使用(支持03)  
 import xlwt
-#��ȡexecelʹ��(֧��07)  
+#读取execel使用(支持07)  
 from openpyxl import Workbook  
-#д��excelʹ��(֧��07)  
+#写入excel使用(支持07)  
 from openpyxl import load_workbook
 import numpy as np
-
-resoursepath = r'D:\Dropbox (Linci Work)\MyPrograms\Python 3\audit-helper\details.xls'
 
 workbook=xlrd.open_workbook(resoursepath)  
 sheets=workbook.sheet_names();
@@ -44,7 +66,7 @@ for acc in account_set:
         credit = 0.0
         debit = 0.0
         
-        #����sheet1��������row       
+        #遍历sheet1中所有行row       
         for curr_row in range(nrows):
             row = sheet.row_values(curr_row)
             if(row[YEAR]==year)&(str(row[ACCNUM])==acc):
@@ -66,15 +88,15 @@ check_name = dict(zip(pick_col(list, ACCNUM), pick_col(list, ACCNAME)))
 main_acc = sorted(list(set([acc[:4]for acc in account_set])))
 ylen = len(year_set)
 def write_format(sheet, year_set):
-    sheet.write_merge(0, 1, 0, 0, '��Ŀ����')
-    sheet.write_merge(0, 1, 1, 1, '��Ŀ����')
+    sheet.write_merge(0, 1, 0, 0, '科目代码')
+    sheet.write_merge(0, 1, 1, 1, '科目名称')
     i = 2
     for year in year_set:
-        sheet.write_merge(0, 0, i, i+3, '%d��'%year)
-        sheet.write_merge(1, 1, i, i, '���')
-        sheet.write_merge(1, 1, i+1, i+1, '�跽')
-        sheet.write_merge(1, 1, i+2, i+2, '����')
-        sheet.write_merge(1, 1, i+3, i+3, '��ĩ')
+        sheet.write_merge(0, 0, i, i+3, '%d年'%year)
+        sheet.write_merge(1, 1, i, i,  '年初')
+        sheet.write_merge(1, 1, i+1, i+1,  '借方' )
+        sheet.write_merge(1, 1, i+2, i+2,  '贷方' )
+        sheet.write_merge(1, 1, i+3, i+3,  '年末' )
         i+=4  
 def write_excel(data, path):    
     wb=xlwt.Workbook()  
@@ -98,7 +120,6 @@ def write_excel(data, path):
                 i += 1 
         i += 1
     wb.save(path)  
-    print("д�����ݳɹ������test.xls�鿴���")
+    print( "\n写入数据成功！" )
     
-testpath = r"C:\Users\Administrator\Desktop\test.xls"
 write_excel(ndata, testpath)    
